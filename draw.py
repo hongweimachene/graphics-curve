@@ -4,14 +4,12 @@ from matrix import *
 
 def add_circle( points, cx, cy, cz, r, step ):
     theta = 0
-    x1,y1,z1 = 0, 0, 0
+    x0,y0,z0 = r * math.cos(theta * 2 * math.pi) + cx, r * math.sin(theta * 2 * math.pi) + cy, 0
     while theta <= 1:
-        x1, y1, z1 = r * math.cos(theta * 2 * math.pi) + cx, r * math.sin(theta * 2 * math.pi) + cy, z1
-        add_point( points, x1, y1, z1 )
-        if theta != 0:
-            add_point( points,x1, y1, z1 )
+        x1, y1, z1 = r * math.cos(theta * 2 * math.pi) + cx, r * math.sin(theta * 2 * math.pi) + cy, 0
+        add_edge( points, x0, y0, z0, x1, y1, z1)
         theta += step
-    add_point( points, r + cx, cy, 0 )
+        x0, y0 = x1, y1
 
 def add_curve( points, x0, y0, x1, y1, x2, y2, x3, y3, step, curve_type ):
     t = 0
@@ -19,14 +17,14 @@ def add_curve( points, x0, y0, x1, y1, x2, y2, x3, y3, step, curve_type ):
     coeffs_Y = generate_curve_coefs(y0, y1, y2, y3, curve_type)
     ax, bx, cx, dx = coeffs_X[0][0], coeffs_X[0][1], coeffs_X[0][2], coeffs_X[0][3]
     ay, by, cy, dy = coeffs_Y[0][0], coeffs_Y[0][1], coeffs_Y[0][2], coeffs_Y[0][3]
+    x0, y0 = coeffs_X[0][3], coeffs_Y[0][3]
     while t <= 1:
-        x = dx + t * (cx + t * (bx + t * ax))
-        y = dy + t * (cy + t * (by + t * ay))
-        add_point( points, x, y )
-        if t != 0 and t < 1:
-            add_point( points, x, y )
+        x1 = dx + t * (cx + t * (bx + t * ax))
+        y1 = dy + t * (cy + t * (by + t * ay))
+        add_edge( points, x0, y0, 0, x1, y1, 0)
         t += step
-
+        x0, y0 = x1, y1
+        
 def draw_lines( matrix, screen, color ):
     if len(matrix) < 2:
         print('Need at least 2 points to draw')
