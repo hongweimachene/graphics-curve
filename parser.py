@@ -54,7 +54,7 @@ def parse_file( fname, edges, transform, screen, color ):
         #print ':' + line + ':'
 
         if line in ARG_COMMANDS:
-            c+= 1
+            c += 1
             args = lines[c].strip().split(' ')
 
         if line == 'line':
@@ -65,15 +65,18 @@ def parse_file( fname, edges, transform, screen, color ):
                       float(args[3]), float(args[4]), float(args[5]) )
 
         elif line == 'circle':
-            theta = 0
-            cx, cy, cz = float(args[0]), float(args[1]), float(args[2])
+            x,y,z = float(args[0]), float(args[1]), float(args[2])
             r = float(args[3])
-            while theta * 2 * math.pi <= 2 * math.pi:
-                x1, y1, z1 = r * math.cos(theta * 2 * math.pi) + cx, r * math.sin(theta * 2 * math.pi) + cy, z1
-                add_edge( edges, cx, cy, cz, x1, y1, z1 )
-                theta += 0.0001
+            add_circle( edges, x, y, z, r, 0.0001)
+
         elif line == 'bezier':
-                    
+            p = [float(q) for q in args]
+            add_curve(edges, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], 0.0001, 'bezier')
+
+        elif line == 'hermite':
+            p = [float(q) for q in args]
+            add_curve( edges, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], 0.0001, 'hermite')
+
         elif line == 'scale':
             #print 'SCALE\t' + str(args)
             t = make_scale(float(args[0]), float(args[1]), float(args[2]))
@@ -111,4 +114,4 @@ def parse_file( fname, edges, transform, screen, color ):
             else:
                 save_extension(screen, args[0])
 
-        c+= 1
+        c += 1
